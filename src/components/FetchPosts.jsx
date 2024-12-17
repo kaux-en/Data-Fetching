@@ -1,5 +1,6 @@
-import React, { useEffect, useState }  from "react";
+import React, { useEffect, useState, useMemo, useCallback }  from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
+import { Form, ListGroup } from 'react-bootstrap';
 
 
 const fetchPosts = async () => {
@@ -14,14 +15,28 @@ const fetchPosts = async () => {
     } 
 };
 
+
+const PostItem = React.memo(({ post, onEdit, onDelete }) => {
+    console.log('Rendering PostItem: ', post.id); 
+    return (
+        <ListGroup.Item key={post.id}>
+            <span>{post.title}</span> - {post.body}
+            <button onClick={() => onEdit(post)}>Edit</button>
+            <button onClick={() => onDelete(post.id)}>Delete</button>
+        </ListGroup.Item>
+    );
+});
+
+
 const FetchPosts = () => {
     const queryClient = useQueryClient();
     const [formData, setFormData] = useState({ title: '', body: ''});
     const [buttonPressed, setButtonPressed] = useState(false);
+    const [query, setQuery] = useState('');
 
     const { data: posts, isLoading, error } = useQuery('posts', fetchPosts);
 
-
+    
     const editPost = useMutation(
         ({ id, updatedPost }) => fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
             method: 'PUT',
@@ -35,11 +50,23 @@ const FetchPosts = () => {
         },
     );
 
-    const handleSubmit = event => {
+    const handleEditPost = useCallback((post) => {
+        setFormData({ id: post.id, title: post.title, body: post.body });
+        setButtonPressed(true);
+    }, []);
+
+    const handleSubmit = useCallback((event) => {
         event.preventDefault();
         editPost.mutate({ id: formData.id, updatedPost: formData });
         setButtonPressed(false);
-    };
+    }, [formData, editPost]);
+    
+
+    const filteredPosts = useMemo(() => {
+        return posts?.filter(post => 
+            post.title.toLowerCase().includes(query.toLowerCase()))
+    }, [query, posts])
+
 
     useEffect(() => {
         if (posts && posts.length > 0) {
@@ -51,7 +78,7 @@ const FetchPosts = () => {
         }
     }, [posts]);
 
-
+    
     const deletePost = useMutation(
         id => fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
             method: 'DELETE'
@@ -62,30 +89,29 @@ const FetchPosts = () => {
             }
         }
     );
+    
+    const handleQueryChange = useCallback((e) => {
+        setQuery(e.target.value);
+    }, []);
+
 
     if (isLoading) return <p>Loading posts...</p>;
     if (error) return <p>Error fetching posts: {error.message}</p>;
 
     return (
         <div>
-                {
-                posts && posts.length > 0 ? (
-                <ul>
-                 {posts.map((post) => ( 
-                    <li key={post.id}>
-                        {post.title} - {post.body}
-                        <button onClick={() => {setFormData({ id: post.id, title: post.title, body: post.body });
-                            setButtonPressed(true)}}>Edit</button>
-                        <button onClick={() => deletePost.mutate(post.id)}>Delete</button>
-                    </li>
-                ))}
-                </ul>
-                ) : (
-                    <p>No Posts Available</p>
-                )
-                }
-             
-             <div>
+
+            <div>
+                
+                <Form.Group>
+                    <Form.Control 
+                        type='text'
+                        placeholder='Search Posts'
+                        value={query}
+                        onChange={handleQueryChange} />
+                </Form.Group>
+                <br />
+                <div>
                 { buttonPressed ? (
                 <form onSubmit={handleSubmit}>
                     <label><strong>Edit Title</strong></label>
@@ -105,9 +131,45 @@ const FetchPosts = () => {
                     ''
                 )}
              </div>
+                <br />
+                <ListGroup>
+                    {filteredPosts.map(post => (
+                        <PostItem 
+                            key={post.id}
+                            post={post} 
+                            onEdit={handleEditPost}
+                            onDelete={deletePost.mutate}
+                    />
+                    ))}
+                </ListGroup>  
+                
+            </div>
+
+
+            {/* --CODE FOR DISPLAYING, EDITING & DELETING POSTS-- 
+                {
+                posts && posts.length > 0 ? (
+                <ul>
+                 {posts.map((post) => ( 
+                    <li key={post.id}>
+                        {post.title} - {post.body}
+                        <button onClick={() => {setFormData({ id: post.id, title: post.title, body: post.body });
+                            setButtonPressed(true)}}>Edit</button>
+                        <button onClick={() => deletePost.mutate(post.id)}>Delete</button>
+                    </li>
+                ))}
+                </ul>
+                ) : (
+                    <p>No Posts Available</p>
+                )
+                }
+            */}
+             
+             
         </div>
     )
 };
-
+ 
 export default FetchPosts;
+
 

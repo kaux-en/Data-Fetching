@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useMutation, useQueryClient } from 'react-query';
 import { Container, Form, Button } from 'react-bootstrap';
 
@@ -13,7 +13,8 @@ const addPostToAPI = async (newPost) => {
         if (!response.ok) {
             throw new Error('Error adding the post');
     } 
-        return response.JSON;
+        console.log(newPost)
+        return response.json();
 };
     
 function AddPosts() {
@@ -44,7 +45,7 @@ function AddPosts() {
 
     return (
         <div>
-        
+       
         <Container>
             <h2>Add a Post</h2>
             <Form onSubmit={handleSubmit}>
