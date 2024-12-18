@@ -1,0 +1,24 @@
+{
+    "form": {
+        "postsHeader": "Example Posts",
+        "editButton": "Edit",
+        "deleteButton": "Delete",
+        "searchPlaceholder": "Search Posts",
+        "searchLabel": "Search Posts",
+        "editTitleLabel": "Edit Title",
+        "editBodyLabel": "Edit Post",
+        "submitButton": "Save Changes",
+        "addPostHeader": "Add a Post",
+        "addTitleLabel": "Add a Title",
+        "addTitlePlaceholder": "Add Title",
+        "addPostLabel": "Create your Post",
+        "addPostPlaceholder": "create your post",
+        "addPostButton": "Submit"
+    }, 
+    "comment": {
+        "textarea": "textarea",
+        "submitButton": "Select Post Title",
+        "commentLabel": "Comment"
+    }
+}
+

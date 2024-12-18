@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback }  from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { Form, ListGroup } from 'react-bootstrap';
+import { Form, ListGroup, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 
 
 const fetchPosts = async () => {
@@ -16,13 +17,13 @@ const fetchPosts = async () => {
 };
 
 
-const PostItem = React.memo(({ post, onEdit, onDelete }) => {
+const PostItem = React.memo(({ post, onEdit, onDelete, t }) => {
     console.log('Rendering PostItem: ', post.id); 
     return (
         <ListGroup.Item key={post.id}>
             <span>{post.title}</span> - {post.body}
-            <button onClick={() => onEdit(post)}>Edit</button>
-            <button onClick={() => onDelete(post.id)}>Delete</button>
+            <button onClick={() => onEdit(post)} aria-label="Edit post button">{t('form.editButton')}</button>
+            <button onClick={() => onDelete(post.id)} aria-label="Delete post button">{t('form.deleteButton')}</button>
         </ListGroup.Item>
     );
 });
@@ -36,6 +37,10 @@ const FetchPosts = () => {
 
     const { data: posts, isLoading, error } = useQuery('posts', fetchPosts);
 
+    const { t, i18n } = useTranslation();
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng)
+    }
     
     const editPost = useMutation(
         ({ id, updatedPost }) => fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
@@ -105,28 +110,38 @@ const FetchPosts = () => {
                 
                 <Form.Group>
                     <Form.Control 
+                        controlId='formSearch'
                         type='text'
-                        placeholder='Search Posts'
+                        placeholder={t('form.searchPlaceholder')}
+                        aria-label={t('form.searchLabel')}
                         value={query}
                         onChange={handleQueryChange} />
                 </Form.Group>
                 <br />
+
+                <div>
+                <Button onClick={() => changeLanguage('en')} aria-label="Change language to english button">English</Button>
+                <Button onClick={() => changeLanguage('es')} aria-label="Change language to espanol button">Espanol</Button>
+                </div>
+                <br />
                 <div>
                 { buttonPressed ? (
                 <form onSubmit={handleSubmit}>
-                    <label><strong>Edit Title</strong></label>
+                    <label><strong>{t('form.editTitleLabel')}</strong></label>
                     <input 
                         type="text"
                         name="name"
+                        aria-label={t('form.editTitleLabel')}
                         value={formData.title}
                         onChange={e => setFormData({...formData, title: e.target.value})} />
-                    <label><strong>Edit Body</strong></label>
-                    <input 
+                    <label><strong>{t('form.editBodyLabel')}</strong></label>
+                    <textarea 
                         type="text"
                         name="name"
+                        aria-label={t('form.editBodyLabel')}
                         value={formData.body}
                         onChange={e => setFormData({...formData, body: e.target.value})} />
-                        <button type="submit">Save Changes</button>
+                        <button type="submit" aria-label="form save changes button">{t('form.submitButton')}</button>
                 </form> ) : (
                     ''
                 )}
@@ -139,11 +154,13 @@ const FetchPosts = () => {
                             post={post} 
                             onEdit={handleEditPost}
                             onDelete={deletePost.mutate}
+                            t={t}
                     />
                     ))}
                 </ListGroup>  
                 
             </div>
+            
 
 
             {/* --CODE FOR DISPLAYING, EDITING & DELETING POSTS-- 

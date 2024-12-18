@@ -1,0 +1,23 @@
+{
+    "form": {
+        "postsHeader": "Publicaciones de ejemplo",
+        "editButton": "Editar",
+        "deleteButton": "Borrar",
+        "searchPlaceholder": "Buscar publicaciones",
+        "searchLabel": "Buscar publicaciones",
+        "editTitleLabel": "Editar título",
+        "editBodyLabel": "Editar publicación",
+        "submitButton": "Guardar cambios",
+        "addPostHeader": "Agregar una publicación",
+        "addTitleLabel": "Agregar un título",
+        "addTitlePlaceholder": "Agregar título",
+        "addPostLabel": "Crea tu publicación",
+        "addPostPlaceholder": "crea tu publicación",
+        "addPostButton": "Entregar"
+    },
+    "comment": {
+        "textarea": "área de texto",
+        "submitButton": "Seleccionar título de publicación",
+        "commentLabel": "Comentario"
+    }
+}

@@ -1,7 +1,8 @@
 import React from "react";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useMutation, useQueryClient } from 'react-query';
 import { Container, Form, Button } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 
 
 const addPostToAPI = async (newPost) => {
@@ -21,6 +22,11 @@ function AddPosts() {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const queryClient = useQueryClient();
+
+    const { t, i18n } = useTranslation();
+        const changeLanguage = (lng) => {
+            i18n.changeLanguage(lng)
+        }
     
 
     const mutation = useMutation(addPostToAPI, {
@@ -47,25 +53,27 @@ function AddPosts() {
         <div>
        
         <Container>
-            <h2>Add a Post</h2>
+            <h2>{t('form.addPostHeader')}</h2>
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                    <Form.Label>Add a Title</Form.Label>
+                    <Form.Label>{t('form.addTitleLabel')}</Form.Label>
                     <Form.Control 
                         type="text" 
-                        placeholder="Enter title"
+                        placeholder={t('form.addTitlePlaceholder')}
+                        aria-label={t('form.addTitleLabel')}
                         value={title} 
                         onChange={(e) => setTitle(e.target.value)} />
                 </Form.Group>
                 <Form.Group>
-                    <Form.Label>What's your Post</Form.Label>
+                    <Form.Label>{t('form.addPostLabel')}</Form.Label>
                     <Form.Control  
                         type="text" 
-                        placeholder="Enter post"
+                        placeholder={t('form.addPostPlaceholder')}
+                        aria-label={t('form.addPostLabel')}
                         value={body} 
                         onChange={(e) => setBody(e.target.value)} />
                 </Form.Group>
-                <Button type="submit">Add Post</Button>
+                <Button type="submit" aria-label="form add post button">{t('form.addPostButton')}</Button>
             </Form>
         </Container>  
         </div>
